@@ -5,10 +5,10 @@ let sunTexture
 const textures = []
 
 function preload() {
-  sunTexture = loadImage('/9/data/sun.jpg')
-  textures[0] = loadImage('/9/data/mars.jpg')
-  textures[1] = loadImage('/9/data/earth.jpg')
-  textures[2] = loadImage('/9/data/mercury.jpg')
+  sunTexture = loadImage('data/sun.jpg')
+  textures[0] = loadImage('data/mars.jpg')
+  textures[1] = loadImage('data/earth.jpg')
+  textures[2] = loadImage('data/mercury.jpg')
 }
 
 function setup() {

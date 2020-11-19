@@ -4,7 +4,7 @@ const drops = [];
 let sound
 
 function preload() {
-  sound = loadSound('/4/1.mp3')
+  sound = loadSound('1.mp3')
 }
 
 function setup() {

@@ -59,7 +59,7 @@ function setup() {
   createCanvas(600, 600);
 
   grid = new Grid(rows, cols);
-  frameRate(5);
+  frameRate(7);
 }
 
 function draw() {

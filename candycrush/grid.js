@@ -1,3 +1,10 @@
+const STATE_FALLING = 0;
+const STATE_POPING = 1;
+const STATE_STABLE = 2;
+const STATE_SWAPPING = 3;
+const STATE_TRYING_SWAP = 4;
+const STATE_SWAPPED_POPING = 5;
+
 class Grid {
   constructor(rows, cols) {
     this.rows = rows;
@@ -25,8 +32,7 @@ class Grid {
     }
 
     this.swaps = [];
-    this.trySwap = false;
-    this.afterSwap = false;
+    this.state = STATE_FALLING;
   }
 
   dropShape(col, shape) {
@@ -116,7 +122,7 @@ class Grid {
     }
   }
 
-  isStable() {
+  isFull() {
     for (let i = rows - 1; i >= 0; i--) {
       for (let j = 0; j < cols; j++) {
         const cell = this.grid[i][j];
@@ -156,17 +162,30 @@ class Grid {
   }
 
   swapStart(mouseX, mouseY) {
+    if (this.state !== STATE_STABLE) return;
     const cell = this.findCell(mouseX, mouseY);
     if (!cell) return;
     cell.highlight = true;
     this.swaps = [cell];
+    this.state = STATE_SWAPPING;
+  }
+
+  isNeighborCell(cell1, cell2) {
+    return (
+      cell1 === cell2.leftCell ||
+      cell1 === cell2.rightCell ||
+      cell1 === cell2.topCell ||
+      cell1 === cell2.bottomCell
+    );
   }
 
   markSwap(mouseX, mouseY) {
-    if (this.swaps.length === 0) return;
+    if (this.state !== STATE_SWAPPING) return;
 
     const cell = this.findCell(mouseX, mouseY);
-    if (!cell || cell === this.swaps[0]) return;
+    const cell0 = this.swaps[0];
+    if (!cell || cell === cell0) return;
+    if (!this.isNeighborCell(cell, cell0)) return;
 
     if (this.swaps.length === 2) {
       this.swaps[1].highlight = false;
@@ -177,11 +196,17 @@ class Grid {
   }
 
   swap() {
-    if (this.swaps.length !== 2) return;
+    if (this.state !== STATE_SWAPPING) return;
+    if (this.swaps.length !== 2) {
+      this.clearSwaps();
+      this.state = STATE_STABLE;
+      return;
+    }
+
     const [cell1, cell2] = this.swaps;
     cell1.highlight = false;
     cell2.highlight = false;
-    this.trySwap = true;
+    this.state = STATE_TRYING_SWAP;
   }
 
   doSwap() {
@@ -192,10 +217,11 @@ class Grid {
     shape2.attachToCell(cell1);
   }
 
-  resetSwaps() {
-    this.trySwap = false;
-    this.afterSwap = false;
-    this.swaps = [];
+  clearSwaps() {
+    while (this.swaps.length > 0) {
+      const cell = this.swaps.pop();
+      cell.highlight = false;
+    }
   }
 
   gameOver() {
@@ -203,23 +229,31 @@ class Grid {
   }
 
   update() {
-    if (this.trySwap || this.afterSwap) {
-      if (this.trySwap) {
-        this.doSwap();
-        this.trySwap = false;
-        this.afterSwap = true;
-      } else if (this.afterSwap) {
-        this.popShapes();
-        if (this.isStable()) this.doSwap();
-        this.resetSwaps();
+    if (this.state === STATE_FALLING) {
+      this.shapesFall();
+      this.dropShapes();
+      if (this.isFull()) {
+        this.state = STATE_POPING;
       }
-    } else {
-      if (this.isStable()) {
-        this.popShapes();
+    } else if (this.state === STATE_POPING) {
+      this.popShapes();
+      if (this.isFull()) {
+        this.state = STATE_STABLE;
       } else {
-        this.shapesFall();
-        this.dropShapes();
+        this.state = STATE_FALLING;
       }
+    } else if (this.state === STATE_TRYING_SWAP) {
+      this.doSwap();
+      this.state = STATE_SWAPPED_POPING;
+    } else if (this.state === STATE_SWAPPED_POPING) {
+      this.popShapes();
+      if (this.isFull()) {
+        this.doSwap();
+        this.state = STATE_STABLE;
+      } else {
+        this.state = STATE_POPING;
+      }
+      this.clearSwaps();
     }
   }
 

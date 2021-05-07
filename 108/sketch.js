@@ -4,6 +4,7 @@ let y = 0;
 function setup() {
   createCanvas(600, 600);
   background(0);
+  colorMode(HSB)
 }
 
 function draw() {
@@ -14,11 +15,11 @@ function draw() {
 }
 
 function drawPoint() {
-  stroke(255);
-  strokeWeight(2);
   const px = map(x, -2.182, 2.6558, 0, width);
   const py = map(y, 0, 9.9983, height, 0);
 
+  strokeWeight(2);
+  stroke(map(y, 0, 9.9983, 256, 0), 255, 255);
   point(px, py);
 }
 

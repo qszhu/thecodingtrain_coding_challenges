@@ -71,20 +71,25 @@ function draw() {
   strokeWeight(1);
   stroke(255);
   for (let i = 0; i < 4; i++) {
-    connect(i, (i + 1) % 4, projected);
-    connect(i + 4, ((i + 1) % 4) + 4, projected);
-    connect(i, i + 4, projected);
+    connect(i, (i + 1) % 4);
+    connect(i + 4, ((i + 1) % 4) + 4);
+    connect(i, i + 4);
   }
 
   angle += 0.03;
 }
 
 function matmul(a, b) {
-  if (a[0].length !== b.length) return;
+  const aRows = a.length;
+  const aCols = a[0].length;
+  const bRows = b.length;
+  const bCols = b[0].length;
+  if (aCols !== bRows)
+    throw `matrices not match: ${aRows}x${aCols}, ${bRows}x${bCols}`;
 
-  const H = b.length;
-  const rows = a.length;
-  const cols = b[0].length;
+  const H = aCols;
+  const rows = aRows;
+  const cols = bCols;
   const res = new Array(rows).fill().map(() => new Array(cols).fill(0));
   for (let i = 0; i < res.length; i++) {
     for (let j = 0; j < res[i].length; j++) {

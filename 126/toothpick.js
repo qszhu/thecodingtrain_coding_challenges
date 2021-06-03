@@ -37,10 +37,11 @@ class Toothpick {
   }
 
   show(factor) {
-    strokeWeight(2 / factor);
+    stroke(0);
     if (this.newPick) {
       stroke(0, 0, 255);
     }
+    strokeWeight(2 / factor)
     line(this.ax, this.ay, this.bx, this.by);
   }
 }

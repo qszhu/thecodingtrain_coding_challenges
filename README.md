@@ -1,1 +1,1 @@
-https://thecodingtrain.com/CodingChallenges/
+Blog post: [一些有意思的 The Coding Train 编码挑战](https://qszhu.github.io/2021/08/17/the-coding-train-coding-challenges.html)
